@@ -1,112 +1,213 @@
 #include <iostream>
-using namespace std;
+#include <string.h>
+#include <math.h>
 
-enum Nucl {A, G, C, T, Empty};
+using namespace std;
+typedef unsigned char byte;
+
+enum Nucl {A, G, C, T, EMPTY};
 
 
 class RNA {
-
 private:
-    char *chain = nullptr;
-    int capacity = 0;
-    int size = 0;
 
-    short getNucl(int index) {
+    byte *chain;
+    int capacity;
+    int size;
+
+    short get(int index) {
         if (0 <= index && index < size) {
-            char block = chain[index/4];
-            block >>= 2*(3 - (index%4));
+            byte block = chain[index/4];
+            block >>= 2*(3 - index%4);
             return block & 0x03;
         }
-        return Empty;
+        return EMPTY;
     }
+    void fill(Nucl nucl, int quantity) {
 
+        byte block = 0;
+
+        for (int i=0, j=0; i < quantity; ++i) {
+
+            block |= nucl << 2*(3 - i%4);
+
+            if (i % 4 == 3 || i == quantity-1) {
+                chain[j++] = block;
+                block = 0;
+            }
+        }
+
+        size = quantity;
+        capacity = quantity;
+    }
+    int arr_len(double quantity) const {
+        return ceil(quantity/4);
+    }
 public:
-    RNA() {}
+    RNA() {
+        chain = NULL;
+        capacity = 0;
+        size = 0;
+    }
 
     RNA(Nucl nucl, int quantity) {
-        addNucles(nucl, quantity);
+        if (quantity > 0) {
+            chain = new byte[arr_len(quantity)];
+            fill(nucl, quantity);
+        }
+        else {
+            RNA();
+        }
     }
     RNA(const RNA &other) {
-
+        this->capacity = other.capacity;
+        this->size = other.size;
+        this->chain = new byte[arr_len(other.capacity)];
+        memcpy(this->chain, other.chain, sizeof(byte)*arr_len(other.capacity));
     }
     ~RNA() {
-        if (chain != nullptr) {
-            delete[] chain;
-        }
+        delete[] chain;
     }
 
-    void addNucles(Nucl nucl, int quantity) {
+    void add(Nucl nucl) {
 
-        if (quantity <= 0) {
-            return;
+        // Довыделение памяти
+        if (size == capacity) {
+            capacity = (capacity) ? capacity*2 : 32;
+            realloc(chain, sizeof(byte)*arr_len(capacity));
+            memset(&chain[arr_len(capacity/2)], 0, sizeof(byte)*arr_len(capacity/2));
         }
 
-        if (chain == nullptr) {
-            capacity = quantity;
-            chain = new char[capacity/4 + 1];
-            chain[capacity/4 + 1] = 0;
-        }
-
-        int iter = size/4;
-        unsigned char cur_byte = 0;
-
-        for (int i=size, j=0; i < size + quantity; i++, j+=2) {
-
-            if (i > capacity) {
-                capacity *= 2;
-                realloc(chain, sizeof(char)*(capacity/4 + 1));
-            }
-
-            if (!(i % 4) && i != 0) {
-                chain[iter++] = cur_byte;
-                cur_byte = 0;
-                j = 0;
-            }
-            if (nucl % 2) {
-                cur_byte |= (1 << j);
-            }
-            if (nucl / 2) {
-                cur_byte |= (1 << (j+1));
-            }
-        }
-        cur_byte <<= 2*(4 - (size+quantity)%4);
-        chain[iter] = cur_byte;
-        size += quantity;
+        chain[size/4] |= nucl << 2*(3 - size%4);
+        size++;
     }
-    void printChain() {
+    void print() {
         for (int i=0; i < size; ++i) {
-            switch (getNucl(i)) {
+            switch (get(i)) {
                 case 0: cout << "A"; break;
                 case 1: cout << "G"; break;
                 case 2: cout << "C"; break;
-                case 3: cout << "T";
+                case 3: cout << "T"; break;
+                case 4: cout << "_";
             }
         }
         cout << endl;
     }
+    bool isComplementary(const RNA &other) {
+        return *this == !other;
+    }
 
-    RNA& operator =(const RNA &other) {
-        return *this;
+    RNA& operator =  (const RNA &);
+    Nucl operator [] (int);
+
+    bool operator == (const RNA &) const;
+    bool operator != (const RNA &) const;
+    RNA  operator +  (const RNA &) const;
+    RNA  operator !  ()            const;
+};
+
+
+RNA& RNA::operator = (const RNA &other) {
+    this->capacity = other.capacity;
+    this->size = other.size;
+
+    delete[] this->chain;
+    this->chain = new byte[arr_len(other.capacity)];
+    memcpy(this->chain, other.chain, sizeof(byte)*arr_len(other.capacity));
+
+    return *this;
+}
+
+Nucl RNA::operator [] (int index) {
+    return (Nucl)get(index);
+};
+
+bool RNA::operator == (const RNA &other) const {
+    if (this->size != other.size) {
+        return false;
     }
-    RNA operator +(const RNA &other){
-        RNA tmp;
-        return tmp;
+    for (int i=0; i < arr_len(this->size); ++i) {
+        if (this->chain[i] != other.chain[i]) {
+            return false;
+        }
     }
-    Nucl operator [](int index) {
-        return (Nucl)getNucl(index);
+    return true;
+}
+
+bool RNA::operator != (const RNA &other) const {
+    return !(*this == other);
+}
+
+RNA RNA::operator + (const RNA &other) const {
+
+    if (this->size + other.size == 0) {
+        return RNA();
+    }
+
+    RNA tmp;
+    tmp.capacity = this->capacity + other.capacity;
+    tmp.size = this->size + other.size;
+    tmp.chain = new byte[arr_len(tmp.capacity)];
+
+    memcpy(tmp.chain, this->chain, sizeof(byte)*arr_len(other.size));
+    memcpy(&tmp.chain[arr_len(this->size)], other.chain, sizeof(byte)*arr_len(other.size));
+
+    short shift = this->size % 4;
+    if (shift) {
+        for (int i=this->size/4; i < arr_len(tmp.size); ++i) {
+            tmp.chain[i] |= tmp.chain[i+1] >> 2*shift;
+        }
+    }
+    return tmp;
+}
+
+RNA RNA::operator ! () const {
+
+    RNA tmp = *this;
+
+    for (int i=0; i < arr_len(tmp.size); ++i) {
+        tmp.chain[i] = ~tmp.chain[i];
+    }
+
+    // Обнуление хвоста последнего байта
+    tmp.chain[tmp.size/4] >>= 2*(3 - tmp.size%4);
+    tmp.chain[tmp.size/4] <<= 2*(3 - tmp.size%4);
+
+    return tmp;
+}
+
+
+class DNA {
+public:
+    RNA right;
+    RNA left;
+
+    DNA(RNA &right, RNA &left) {
+        this->right = right;
+        this->left = left;
     }
 };
 
+
 int main() {
 
-    RNA a;
+    RNA a(A, 4);
+    RNA c(A, 5);
 
-    a.addNucles(T, 13);
-    a.printChain();
+    a.add(A);
+    a.add(T);
+    a.add(G);
+    a.add(C);
 
-    // char *chain = new char[3] {0x0E, 0x6F, 0x02};
+    c.add(T);
+    c.add(G);
+    c.add(C);
 
-    // delete [] chain;
+    c.print();
+
+    cout << (a == c);
+
+    DNA d(a, c);
 
     return 0;
 }
