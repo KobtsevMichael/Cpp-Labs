@@ -1,10 +1,9 @@
 #include <iostream>
 #include <string.h>
 #include <math.h>
-
 using namespace std;
-typedef unsigned char byte;
 
+typedef unsigned char byte;
 enum Nucl {A, G, C, T, EMPTY};
 
 
@@ -51,7 +50,7 @@ public:
     }
 
     RNA(Nucl nucl, int quantity) {
-        if (quantity > 0) {
+        if (quantity > 0 && nucl != EMPTY) {
             chain = new byte[arr_len(quantity)];
             fill(nucl, quantity);
         }
@@ -71,11 +70,22 @@ public:
 
     void add(Nucl nucl) {
 
-        // Довыделение памяти
+        if (nucl == EMPTY) {
+            return;
+        }
+
+        // Выделение или довыделение памяти
         if (size == capacity) {
-            capacity = (capacity) ? capacity*2 : 32;
-            realloc(chain, sizeof(byte)*arr_len(capacity));
-            memset(&chain[arr_len(capacity/2)], 0, sizeof(byte)*arr_len(capacity/2));
+            if (capacity) {
+                capacity *= 2;
+                realloc(chain, sizeof(byte)*arr_len(capacity));
+                memset(&chain[arr_len(capacity/2)], 0, sizeof(byte)*arr_len(capacity/2));
+            }
+            else {
+                capacity = 32;
+                chain = new byte[arr_len(capacity)];
+                memset(chain, 0, sizeof(byte)*arr_len(capacity));
+            }
         }
 
         chain[size/4] |= nucl << 2*(3 - size%4);
@@ -84,11 +94,11 @@ public:
     void print() {
         for (int i=0; i < size; ++i) {
             switch (get(i)) {
-                case 0: cout << "A"; break;
-                case 1: cout << "G"; break;
-                case 2: cout << "C"; break;
-                case 3: cout << "T"; break;
-                case 4: cout << "_";
+                case A: cout << "A"; break;
+                case G: cout << "G"; break;
+                case C: cout << "C"; break;
+                case T: cout << "T"; break;
+                default: cout << "_";
             }
         }
         cout << endl;
@@ -120,7 +130,7 @@ RNA& RNA::operator = (const RNA &other) {
 
 Nucl RNA::operator [] (int index) {
     return (Nucl)get(index);
-};
+}
 
 bool RNA::operator == (const RNA &other) const {
     if (this->size != other.size) {
@@ -149,7 +159,7 @@ RNA RNA::operator + (const RNA &other) const {
     tmp.size = this->size + other.size;
     tmp.chain = new byte[arr_len(tmp.capacity)];
 
-    memcpy(tmp.chain, this->chain, sizeof(byte)*arr_len(other.size));
+    memcpy(tmp.chain, this->chain, sizeof(byte)*arr_len(this->size));
     memcpy(&tmp.chain[arr_len(this->size)], other.chain, sizeof(byte)*arr_len(other.size));
 
     short shift = this->size % 4;
@@ -170,8 +180,8 @@ RNA RNA::operator ! () const {
     }
 
     // Обнуление хвоста последнего байта
-    tmp.chain[tmp.size/4] >>= 2*(3 - tmp.size%4);
-    tmp.chain[tmp.size/4] <<= 2*(3 - tmp.size%4);
+    tmp.chain[tmp.size/4] >>= 2*(4 - tmp.size%4);
+    tmp.chain[tmp.size/4] <<= 2*(4 - tmp.size%4);
 
     return tmp;
 }
@@ -191,21 +201,18 @@ public:
 
 int main() {
 
-    RNA a(A, 4);
-    RNA c(A, 5);
-
-    a.add(A);
-    a.add(T);
-    a.add(G);
-    a.add(C);
+    RNA a(A, 5);
+    RNA c;
 
     c.add(T);
+    c.add(A);
     c.add(G);
+    c.add(T);
     c.add(C);
 
-    c.print();
+    RNA b = a + c;
 
-    cout << (a == c);
+    b.print();
 
     DNA d(a, c);
 
