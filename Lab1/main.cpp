@@ -1,12 +1,13 @@
 #include <iostream>
-#include <string.h>
-#include <math.h>
+#include <cstring>
+#include <cmath>
 using namespace std;
 
-#include "Rna.h"
-#include "Dna.h"
+#include "rna.h"
+#include "dna.h"
 
-// Конструктор, конструктор копирования и деконструктор
+
+// Конструктор по кол-ву нуклеотидов
 
 RNA::RNA(Nucl nucl, int_t quantity) {
     if (quantity > 0) {
@@ -18,6 +19,21 @@ RNA::RNA(Nucl nucl, int_t quantity) {
     }
 }
 
+// Конструктор из строки
+
+RNA::RNA(string nucls_str) : capacity(0), size(0) {
+    if (nucls_str.length()) {
+        for (int_t i=0; i < nucls_str.length(); ++i) {
+            add(charToNucl(nucls_str[i]));
+        }
+    }
+    else {
+        RNA();
+    }
+}
+
+// Конструктор копирования
+
 RNA::RNA(const RNA &other) {
     if (this == &other) {
         return;
@@ -27,6 +43,8 @@ RNA::RNA(const RNA &other) {
     this->chain = new byte[arr_len(other.capacity)];
     memcpy(this->chain, other.chain, sizeof(byte)*arr_len(other.capacity));
 }
+
+// Деконструктор
 
 RNA::~RNA() {
     if (chain != nullptr) {
@@ -93,15 +111,65 @@ void RNA::add(Nucl nucl) {
     size++;
 }
 
+void RNA::addPlus(Nucl nucl) {
+
+    // Выделение или довыделение памяти
+    if (size == capacity) {
+        if (capacity) {
+            capacity += 32;
+            byte *tmp_chain = new byte[arr_len(capacity)];
+            memcpy(tmp_chain, chain, sizeof(byte)*arr_len(capacity-32));
+            memset(&tmp_chain[arr_len(capacity-32)], 0, sizeof(byte)*8);
+            delete[] chain;
+            chain = tmp_chain;
+        }
+        else {
+            capacity = 32;
+            chain = new byte[arr_len(capacity)];
+            memset(chain, 0, sizeof(byte)*arr_len(capacity));
+        }
+    }
+
+    chain[size/4] |= nucl << 2*(3 - size%4);
+    size++;
+}
+
+int_t RNA::getCapacity() {
+    return arr_len(capacity);
+}
+
+char RNA::nuclToChar(short_t nucl) {
+    switch (nucl) {
+        case 0: return 'A';
+        case 1: return 'G';
+        case 2: return 'C';
+        default: return 'T';
+    }
+}
+
+Nucl RNA::charToNucl(char symb) {
+    switch (symb) {
+        case 'A': return A;
+        case 'G': return G;
+        case 'C': return C;
+        default: return T;
+    }
+}
+
+char* RNA::getString() {
+
+    char *rna_string = new char[size];
+    memset(rna_string, 0, sizeof(char)*(size+1));
+
+    for (int_t i=0; i < size; ++i) {
+        rna_string[i] = nuclToChar(get(i));
+    }
+    return rna_string;
+}
+
 void RNA::print() {
     for (int_t i=0; i < size; ++i) {
-        switch (get(i)) {
-            case A: cout << "A"; break;
-            case G: cout << "G"; break;
-            case C: cout << "C"; break;
-            case T: cout << "T"; break;
-            default: cout << "_";
-        }
+        cout << nuclToChar(get(i));
     }
     cout << endl;
 }
@@ -237,34 +305,4 @@ RNA::NuclReference& RNA::NuclReference::operator = (RNA::NuclReference& other) {
 }
 RNA::NuclReference::operator Nucl() {
     return (Nucl)rna->get(index);
-}
-
-
-int main() {
-
-    RNA a(C, 10);
-    RNA c;
-
-    c.add(T);
-    c.add(A);
-    c.add(G);
-    c.add(T);
-    c.add(C);
-    c.add(G);
-    c.add(G);
-
-    c.print();
-
-    c[4] = c[3] = A;
-    c.print();
-
-    c = c.split(2);
-    c.print();
-
-    RNA b = !a + !c;
-    b.print();
-
-    DNA d(a, c);
-
-    return 0;
 }

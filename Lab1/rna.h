@@ -34,14 +34,21 @@ public:
 
     RNA() : chain(nullptr), capacity(0), size (0) {}
     RNA(Nucl, int_t);
+    RNA(std::string);
     RNA(const RNA&);
 
     ~RNA();
 
     void add(Nucl);
+    void addPlus(Nucl);
     bool isComplementary(const RNA&);
     RNA  split(int_t);
+    int_t getCapacity();
 
+    char nuclToChar(short_t);
+    Nucl charToNucl(char);
+
+    char* getString();
     void print();
 
     RNA& operator =  (const RNA&);
