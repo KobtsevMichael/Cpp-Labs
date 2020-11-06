@@ -11,7 +11,7 @@ include_directories(Google_tests/googletest/include)
 #include the googlemock/include dir
 include_directories(Google_tests/googlemock/include)
 
-set(SOURCE_FILES main.cpp tests.cpp)
+set(SOURCE_FILES rna.cpp tests.cpp)
 add_executable(Lab1 ${SOURCE_FILES})
 
 #Link with GoogleTest

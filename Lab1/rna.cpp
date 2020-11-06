@@ -1,10 +1,8 @@
 #include <iostream>
 #include <cstring>
 #include <cmath>
-using namespace std;
 
 #include "rna.h"
-#include "dna.h"
 
 
 // Конструктор по кол-ву нуклеотидов
@@ -21,7 +19,7 @@ RNA::RNA(Nucl nucl, int_t quantity) {
 
 // Конструктор из строки
 
-RNA::RNA(string nucls_str) : capacity(0), size(0) {
+RNA::RNA(std::string nucls_str) : capacity(0), size(0) {
     if (nucls_str.length()) {
         for (int_t i=0; i < nucls_str.length(); ++i) {
             add(charToNucl(nucls_str[i]));
@@ -55,7 +53,7 @@ RNA::~RNA() {
 
 // Приватные методы
 
-short_t RNA::get(int_t index) {
+short_t RNA::get(int_t index) const {
     if (0 <= index && index < size) {
         byte block = chain[index/4];
         block >>= 2*(3 - index%4);
@@ -165,13 +163,6 @@ char* RNA::getString() {
         rna_string[i] = nuclToChar(get(i));
     }
     return rna_string;
-}
-
-void RNA::print() {
-    for (int_t i=0; i < size; ++i) {
-        cout << nuclToChar(get(i));
-    }
-    cout << endl;
 }
 
 // Перегрузка операторов
@@ -304,5 +295,14 @@ RNA::NuclReference& RNA::NuclReference::operator = (RNA::NuclReference& other) {
     return this->operator=((Nucl)other);
 }
 RNA::NuclReference::operator Nucl() {
-    return (Nucl)rna->get(index);
+    return (Nucl)this->rna->get(index);
+}
+
+// Перегрузка константного оператора индексирования
+
+RNA::NuclReferenceConst RNA::operator [] (int_t index) const {
+    return NuclReferenceConst(index, *this);
+}
+RNA::NuclReferenceConst::operator Nucl() const {
+    return (Nucl)this->rna->get(index);
 }

@@ -19,6 +19,13 @@ TEST_F(OperatorsTests, index_operator) {
     delete[] chain;
 }
 
+TEST_F(OperatorsTests, const_index_operator) {
+    const RNA a(C, 5);
+    Nucl k = a[2];
+
+    ASSERT_EQ(k, a[2]) << "CONST INDEX error";
+}
+
 TEST_F(OperatorsTests, not_sum_operators) {
     RNA a("TAGTCC");
     RNA b("TTTTTT");
@@ -30,7 +37,16 @@ TEST_F(OperatorsTests, not_sum_operators) {
     delete[] chain;
 }
 
-TEST_F(OperatorsTests, split_operation) {
+TEST_F(OperatorsTests, is_complementary_method) {
+    RNA a("GACCTAGGGG");
+    RNA b("CTGGATCCCC");
+    RNA c("TCAT");
+
+    EXPECT_TRUE(a.isComplementary(b)) << "IS COMPLEMETARY 1 error";
+    EXPECT_FALSE(a.isComplementary(c)) << "IS COMPLEMETARY 2 error";
+}
+
+TEST_F(OperatorsTests, split_method) {
     RNA a(C, 12);
     a.add(G);
     a.add(T);
