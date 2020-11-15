@@ -1,7 +1,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 
-#include "rna.h"
+#include "../src/rna.h"
 
 using testing::Eq;
 
@@ -85,9 +85,4 @@ TEST_F(TimeTests, million_nuls_mul) {
     for (int_t i=0; i < 1000000; ++i) {
         a.add(G);
     }
-}
-
-int main() {
-    testing::InitGoogleTest();
-    return RUN_ALL_TESTS();
 }
