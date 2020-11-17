@@ -96,6 +96,7 @@ void Field::load(string filename) {
             new_field[i][j] = (symb == '1');
         }
     }
+    fin.close();
 }
 
 short_t Field::getAliveNighbours(short_t x, short_t y) {

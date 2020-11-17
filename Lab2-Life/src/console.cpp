@@ -5,7 +5,7 @@ using namespace std;
 
 Console::Console() {
     current_status = GREETING;
-    alphabet = "abcdefghijklmnopqrstuvwxyz";
+    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 }
 
 void Console::clear() {
@@ -26,12 +26,19 @@ void Console::updateField(Field *field) {
 
     for (short_t i=0; i < FIELD_H; ++i) {
         for (short_t j=-1; j < FIELD_W; ++j) {
+
             if (j == -1) {
                 cout << fmt::format(num_col_format, (short)i);
                 continue;
             }
+
             cout << string(" ", X_SEP);
-            cout << ((*field).new_field[j][i] ? ALIVE_CELL : DEAD_CELL);
+
+            if ((*field).new_field[j][i]) {
+                fmt::print(fg(fmt::color::cornflower_blue), ALIVE_CELL);
+            } else {
+                fmt::print(fg(fmt::color::white), DEAD_CELL);
+            }
         }
         cout << string("\n", Y_SEP+1);
     }
@@ -124,11 +131,13 @@ consoleMessage Console::readCommand(Field *field, string command_str) {
         short_t n;
         try {
             n = command.size() == 1 ? 1 : stoi(command[1]);
-            for (short_t i=0; i < n; ++i) {
+            for (short_t i=0; i < n-1; ++i) {
                 field->step();
                 Sleep(SLEEP_TIME);
                 updateField(field);
             }
+            field->step();
+            Sleep(SLEEP_TIME);
         }
         catch (exception&) {
             return INVALID_ARGUMENT;
