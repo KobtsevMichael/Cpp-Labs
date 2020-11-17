@@ -1,7 +1,6 @@
 #ifndef LAB2_LIFE_FIELD_H
 #define LAB2_LIFE_FIELD_H
 
-#include <iostream>
 #include <algorithm>
 #include <fstream>
 

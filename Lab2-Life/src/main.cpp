@@ -1,7 +1,8 @@
+#include <gtest/gtest.h>
 #include "console.h"
-#include <fstream>
 
-int main() {
+
+int main(int argc, char **argv) {
 
     // reset            – Очистить поле и счетчик ходов
     // set XY           — Установить организм в клетку
@@ -11,18 +12,19 @@ int main() {
     // save «filename»  – Сохранить поле в файл в текущей директории
     // load «filename»  – Загрузить поле из файла в текущей директории
 
-    Console cmd;
+    if (argc == 2 && !strcmp(argv[1], "-test")) {
+        testing::InitGoogleTest();
+        return RUN_ALL_TESTS();
+    }
+
+    Console console;
     Field field;
     consoleMessage msg;
-//
-//    std::ofstream fout;
-//    fout.open("files/out.txt");
-//    fout << "BROOOOO";
 
     do {
-        cmd.updateField(&field);
-        msg = cmd.readCommand(&field);
-        cmd.current_status = msg;
+        console.updateField(&field);
+        msg = console.readCommand(&field);
+        console.current_status = msg;
     } while (msg != QUIT);
 
     return 0;

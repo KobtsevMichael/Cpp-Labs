@@ -38,7 +38,7 @@ void Console::updateField(Field *field) {
     cout << "\n";
 }
 
-consoleMessage Console::readCommand(Field *field) {
+consoleMessage Console::readCommand(Field *field, string command_str) {
 
     cout << " ";
 
@@ -55,7 +55,7 @@ consoleMessage Console::readCommand(Field *field) {
             fmt::print(fg(fmt::color::crimson) | fmt::emphasis::bold,
                        "Invalid command. Please, try again");
             break;
-        case INVALID_ARG_NUMBER:
+        case INVALID_ARGS_NUMBER:
             fmt::print(fg(fmt::color::crimson) | fmt::emphasis::bold,
                        "Invalid args number. Please, try again");
             break;
@@ -72,7 +72,6 @@ consoleMessage Console::readCommand(Field *field) {
     }
     cout << "\n";
 
-    string command_str;
     while (command_str.empty()) {
         cout << " $ ";
         getline(cin, command_str);
@@ -82,19 +81,19 @@ consoleMessage Console::readCommand(Field *field) {
 
     if (command[0] == "reset") {
         if (command.size() != 1) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         field->reset();
     }
     else if (command[0] == "back") {
         if (command.size() != 1) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         field->back();
     }
     else if (command[0] == "set") {
         if (command.size() != 2) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         short_t row_int, col_int;
         try {
@@ -107,7 +106,7 @@ consoleMessage Console::readCommand(Field *field) {
     }
     else if (command[0] == "clear") {
         if (command.size() != 2) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         short_t row_int, col_int;
         try {
@@ -120,7 +119,7 @@ consoleMessage Console::readCommand(Field *field) {
     }
     else if (command[0] == "step") {
         if (command.size() > 2) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         short_t n;
         try {
@@ -137,13 +136,13 @@ consoleMessage Console::readCommand(Field *field) {
     }
     else if (command[0] == "save") {
         if (command.size() != 2) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         field->save(command[1]);
     }
     else if (command[0] == "load") {
         if (command.size() != 2) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         try {
             field->load(command[1]);
@@ -154,7 +153,7 @@ consoleMessage Console::readCommand(Field *field) {
     }
     else if (command[0] == "quit") {
         if (command.size() != 1) {
-            return INVALID_ARG_NUMBER;
+            return INVALID_ARGS_NUMBER;
         }
         cout << endl;
         return QUIT;
@@ -185,17 +184,17 @@ void Console::readCoords(
         col += cmd_str[i];
     }
 
-    if (!(*field).isCell(*row_int, *col_int) ||
-        row.empty() || col.empty())
-    {
-        exception e;
-        throw e;
-    }
     try {
         *row_int = alphabet.find(row);
         *col_int = stoi(col);
     }
     catch (exception& e) {
+        throw e;
+    }
+    if (!(*field).isCell(*row_int, *col_int) ||
+        row.empty() || col.empty())
+    {
+        exception e;
         throw e;
     }
 }

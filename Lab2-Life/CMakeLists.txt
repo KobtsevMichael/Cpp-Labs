@@ -7,7 +7,13 @@ set(CMAKE_EXE_LINKER_FLAGS "-static")
 add_subdirectory(lib/fmt)
 include_directories(lib/fmt/include)
 
-file(GLOB SOURCES src/*.cpp src/*.h)
+add_subdirectory(lib/google_tests)
+include_directories(lib/google_test/include)
+include_directories(lib/google_mock/include)
+
+file(GLOB SOURCES src/*.cpp src/*.h tests/*.cpp tests/*.h)
 add_executable(${PROJECT_NAME} ${SOURCES})
 
 target_link_libraries(${PROJECT_NAME} fmt)
+target_link_libraries(${PROJECT_NAME} gtest gtest_main)
+target_link_libraries(${PROJECT_NAME} gmock gmock_main)

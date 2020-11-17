@@ -16,7 +16,7 @@ enum consoleMessage {
     GREETING,
     SUCCESS,
     INVALID_COMMAND,
-    INVALID_ARG_NUMBER,
+    INVALID_ARGS_NUMBER,
     INVALID_ARGUMENT,
     INVALID_FILE,
     QUIT
@@ -32,7 +32,7 @@ public:
     Console();
     void clear();
     void updateField(Field*);
-    consoleMessage readCommand(Field*);
+    consoleMessage readCommand(Field*, std::string="");
 
     void readCoords(std::string, Field*, short_t*, short_t*);
     std::vector<std::string> split(const std::string&, char);

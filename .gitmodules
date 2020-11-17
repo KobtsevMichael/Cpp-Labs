@@ -4,3 +4,6 @@
 [submodule "Lab2-Life/lib/fmt"]
 	path = Lab2-Life/lib/fmt
 	url = https://github.com/fmtlib/fmt.git
+[submodule "Lab2-Life/lib/google_tests"]
+	path = Lab2-Life/lib/google_tests
+	url = https://github.com/google/googletest
