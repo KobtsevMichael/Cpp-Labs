@@ -22,7 +22,7 @@ void Console::updateField(Field *field) {
     for (short_t j=0; j < FIELD_W; ++j) {
         cout << string(" ", X_SEP) << alphabet[j];
     }
-    cout << string("\n", Y_SEP+1);
+    cout << "\n";
 
     for (short_t i=0; i < FIELD_H; ++i) {
         for (short_t j=-1; j < FIELD_W; ++j) {
@@ -35,12 +35,12 @@ void Console::updateField(Field *field) {
             cout << string(" ", X_SEP);
 
             if ((*field).new_field[j][i]) {
-                fmt::print(fg(fmt::color::cornflower_blue), ALIVE_CELL);
+                fmt::print(fg(fmt::color::dark_khaki), ALIVE_CELL);
             } else {
                 fmt::print(fg(fmt::color::white), DEAD_CELL);
             }
         }
-        cout << string("\n", Y_SEP+1);
+        cout << "\n";
     }
     cout << "\n";
 }

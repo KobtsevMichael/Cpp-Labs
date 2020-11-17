@@ -30,7 +30,7 @@ public:
     consoleMessage current_status;
 
     Console();
-    void clear();
+    static void clear();
     void updateField(Field*);
     consoleMessage readCommand(Field*, std::string="");
 

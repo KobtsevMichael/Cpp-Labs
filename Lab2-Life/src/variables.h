@@ -13,9 +13,7 @@ typedef int32_t int_t;
 #define DEAD_CELL "."
 
 #define MAX_NUM_LEN 2
-
 #define X_SEP 1
-#define Y_SEP 0
 
 #define SLEEP_TIME 100
 
