@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <algorithm>
-#include <windows.h>
+#include <fstream>
 
 #include "variables.h"
 
@@ -22,7 +22,6 @@ public:
     void set(short_t, short_t);
     void clear(short_t, short_t);
     void step();
-    void stepN(short_t);
     void back();
     void save(std::string);
     void load(std::string);

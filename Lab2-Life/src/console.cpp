@@ -35,7 +35,7 @@ void Console::updateField(Field *field) {
         }
         cout << string("\n", Y_SEP+1);
     }
-    cout << endl;
+    cout << "\n";
 }
 
 consoleMessage Console::readCommand(Field *field) {
@@ -44,11 +44,11 @@ consoleMessage Console::readCommand(Field *field) {
 
     switch (current_status) {
         case GREETING:
-            fmt::print(fg(fmt::color::aqua) | fmt::emphasis::bold,
-                       "Waiting for command");
+            fmt::print(fg(fmt::color::cadet_blue) | fmt::emphasis::bold,
+                       "Waiting for your command");
             break;
         case SUCCESS:
-            fmt::print(fg(fmt::color::green) | fmt::emphasis::bold,
+            fmt::print(fg(fmt::color::sea_green) | fmt::emphasis::bold,
                        "Success!");
             break;
         case INVALID_COMMAND:
@@ -85,12 +85,14 @@ consoleMessage Console::readCommand(Field *field) {
             return INVALID_ARG_NUMBER;
         }
         field->reset();
-    } else if (command[0] == "back") {
+    }
+    else if (command[0] == "back") {
         if (command.size() != 1) {
             return INVALID_ARG_NUMBER;
         }
         field->back();
-    } else if (command[0] == "set") {
+    }
+    else if (command[0] == "set") {
         if (command.size() != 2) {
             return INVALID_ARG_NUMBER;
         }
@@ -117,20 +119,37 @@ consoleMessage Console::readCommand(Field *field) {
         }
     }
     else if (command[0] == "step") {
-        if (command.size() == 1) {
-            field->step();
-        } else if (command.size() != 2) {
+        if (command.size() > 2) {
             return INVALID_ARG_NUMBER;
         }
-        else {
-            short_t n;
-            try {
-                n = stoi(command[1]);
-                field->stepN(n);
+        short_t n;
+        try {
+            n = command.size() == 1 ? 1 : stoi(command[1]);
+            for (short_t i=0; i < n; ++i) {
+                field->step();
+                Sleep(SLEEP_TIME);
+                updateField(field);
             }
-            catch (exception&) {
-                return INVALID_ARGUMENT;
-            }
+        }
+        catch (exception&) {
+            return INVALID_ARGUMENT;
+        }
+    }
+    else if (command[0] == "save") {
+        if (command.size() != 2) {
+            return INVALID_ARG_NUMBER;
+        }
+        field->save(command[1]);
+    }
+    else if (command[0] == "load") {
+        if (command.size() != 2) {
+            return INVALID_ARG_NUMBER;
+        }
+        try {
+            field->load(command[1]);
+        }
+        catch (exception&) {
+            return INVALID_FILE;
         }
     }
     else if (command[0] == "quit") {
@@ -166,14 +185,15 @@ void Console::readCoords(
         col += cmd_str[i];
     }
 
+    if (!(*field).isCell(*row_int, *col_int) ||
+        row.empty() || col.empty())
+    {
+        exception e;
+        throw e;
+    }
     try {
         *row_int = alphabet.find(row);
         *col_int = stoi(col);
-        if (row.empty() || col.empty() || !(*field).isCell(*row_int, *col_int))
-        {
-            exception e;
-            throw e;
-        }
     }
     catch (exception& e) {
         throw e;

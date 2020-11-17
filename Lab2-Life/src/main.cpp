@@ -1,18 +1,23 @@
 #include "console.h"
+#include <fstream>
 
 int main() {
 
-    // reset           – очистить поле и счетчик ходов
-    // set XY          — установить организм в клетку
-    // clear XY        – очистить клетку
-    // step N          – прокрутить игру вперед на N шагов
-    // back            – прокрутить игру назад на один шаг
-    // save “filename” – сохранить поле в файл в текущей директории
-    // load “filename” – загрузить поле из файла в текущей директории
+    // reset            – Очистить поле и счетчик ходов
+    // set XY           — Установить организм в клетку
+    // clear XY         – Очистить клетку
+    // step N           – Прокрутить игру вперед на N шагов
+    // back             – Прокрутить игру назад на один шаг
+    // save «filename»  – Сохранить поле в файл в текущей директории
+    // load «filename»  – Загрузить поле из файла в текущей директории
 
     Console cmd;
     Field field;
     consoleMessage msg;
+//
+//    std::ofstream fout;
+//    fout.open("files/out.txt");
+//    fout << "BROOOOO";
 
     do {
         cmd.updateField(&field);

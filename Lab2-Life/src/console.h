@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include <vector>
+#include <windows.h>
 #include <fmt/format.h>
 #include <fmt/color.h>
 

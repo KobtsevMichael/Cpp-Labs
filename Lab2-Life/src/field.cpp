@@ -5,24 +5,24 @@ using namespace std;
 
 Field::Field() {
     old_field = new bool* [FIELD_W];
-    for (int i=0; i < FIELD_W; ++i) {
+    for (short_t i=0; i < FIELD_W; ++i) {
         old_field[i] = new bool [FIELD_H];
         fill(old_field[i], old_field[i] + FIELD_H, false);
     }
     new_field = new bool* [FIELD_W];
-    for (int i=0; i < FIELD_W; ++i) {
+    for (short_t i=0; i < FIELD_W; ++i) {
         new_field[i] = new bool [FIELD_H];
         fill(new_field[i], new_field[i] + FIELD_H, false);
     }
 }
 
 Field::~Field() {
-    for (int i=0; i < FIELD_W; ++i) {
+    for (short_t i=0; i < FIELD_W; ++i) {
         delete[] old_field[i];
     }
     delete[] old_field;
 
-    for (int i=0; i < FIELD_W; ++i) {
+    for (short_t i=0; i < FIELD_W; ++i) {
         delete[] new_field[i];
     }
     delete[] new_field;
@@ -60,12 +60,6 @@ void Field::step() {
     }
 }
 
-void Field::stepN(short_t n) {
-    for (short_t i=0; i < n; ++i) {
-        step();
-    }
-}
-
 void Field::back() {
     for (short_t i=0; i < FIELD_W; ++i) {
         for (short_t j=0; j < FIELD_H; ++j) {
@@ -76,8 +70,33 @@ void Field::back() {
     }
 }
 
-void Field::save(std::string) {}
-void Field::load(std::string) {}
+void Field::save(string filename) {
+    ofstream fout;
+    fout.open(filename, fstream::trunc);
+    for (short_t i=0; i < FIELD_W; ++i) {
+        for (short_t j=0; j < FIELD_H; ++j) {
+            fout << (int)new_field[i][j];
+        }
+    }
+    fout.close();
+}
+
+void Field::load(string filename) {
+    ifstream fin;
+    fin.open(filename);
+    char symb;
+    for (short_t i=0; i < FIELD_W; ++i) {
+        for (short_t j=0; j < FIELD_H; ++j) {
+            fin >> symb;
+            if (symb != '0' and symb != '1') {
+                exception e;
+                fin.close();
+                throw e;
+            }
+            new_field[i][j] = (symb == '1');
+        }
+    }
+}
 
 short_t Field::getAliveNighbours(short_t x, short_t y) {
 

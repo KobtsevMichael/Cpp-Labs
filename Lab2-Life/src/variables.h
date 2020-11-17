@@ -17,4 +17,6 @@ typedef int32_t int_t;
 #define X_SEP 1
 #define Y_SEP 0
 
+#define SLEEP_TIME 150
+
 #endif //LAB2_LIFE_VARIABLES_H
