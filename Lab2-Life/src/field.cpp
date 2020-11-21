@@ -28,6 +28,10 @@ Field::~Field() {
     delete[] new_field;
 }
 
+bool** Field::getCurrentField() {
+    return new_field;
+}
+
 void Field::reset() {
     for (short_t i=0; i < FIELD_W; ++i) {
         for (short_t j=0; j < FIELD_H; ++j) {

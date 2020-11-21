@@ -11,11 +11,13 @@ class Field {
 
 private:
     bool **old_field;
-public:
     bool **new_field;
+public:
 
     Field();
     ~Field();
+
+    bool** getCurrentField();
 
     void reset();
     void set(short_t, short_t);
@@ -27,7 +29,6 @@ public:
 
     short_t getAliveNighbours(short_t, short_t);
     bool isCell(short_t, short_t);
-
     void copyField();
 };
 

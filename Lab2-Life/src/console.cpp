@@ -4,8 +4,16 @@
 using namespace std;
 
 Console::Console() {
-    current_status = GREETING;
+    status = GREETING;
     alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+}
+
+void Console::startApp() {
+    Field field;
+    do {
+        updateField(&field);
+        status = readCommand(&field);
+    } while (status != QUIT);
 }
 
 void Console::clear() {
@@ -24,6 +32,8 @@ void Console::updateField(Field *field) {
     }
     cout << "\n";
 
+    bool** cells = (*field).getCurrentField();
+
     for (short_t i=0; i < FIELD_H; ++i) {
         for (short_t j=-1; j < FIELD_W; ++j) {
 
@@ -34,7 +44,7 @@ void Console::updateField(Field *field) {
 
             cout << string(" ", X_SEP);
 
-            if ((*field).new_field[j][i]) {
+            if (cells[j][i]) {
                 fmt::print(fg(fmt::color::dark_khaki), ALIVE_CELL);
             } else {
                 fmt::print(fg(fmt::color::white), DEAD_CELL);
@@ -49,7 +59,7 @@ consoleMessage Console::readCommand(Field *field, string command_str) {
 
     cout << " ";
 
-    switch (current_status) {
+    switch (status) {
         case GREETING:
             fmt::print(fg(fmt::color::cadet_blue) | fmt::emphasis::bold,
                        "Waiting for your command");
@@ -83,7 +93,7 @@ consoleMessage Console::readCommand(Field *field, string command_str) {
         cout << " $ ";
         getline(cin, command_str);
     }
-
+    
     vector<string> command = split(command_str, ' ');
 
     if (command[0] == "reset") {

@@ -18,14 +18,7 @@ int main(int argc, char **argv) {
     }
 
     Console console;
-    Field field;
-    consoleMessage msg;
-
-    do {
-        console.updateField(&field);
-        msg = console.readCommand(&field);
-        console.current_status = msg;
-    } while (msg != QUIT);
+    console.startApp();
 
     return 0;
 }

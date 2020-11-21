@@ -15,9 +15,11 @@ TEST_F(CommandsTest, reset) {
     consoleMessage m = console.readCommand(&field, "reset");
 
     ASSERT_EQ(m, SUCCESS) << "reset -- MSG ERROR";
+
+    bool** cells = field.getCurrentField();
     for (short_t i=0; i < FIELD_W; ++i) {
-        for (short_t j=0; j < FIELD_W; ++j) {
-            EXPECT_FALSE(field.new_field[i][j]) << "reset -- DATA ERROR";
+        for (short_t j=0; j < FIELD_H; ++j) {
+            EXPECT_FALSE(cells[i][j]) << "reset -- DATA ERROR";
         }
     }
 }
@@ -37,8 +39,9 @@ TEST_F(CommandsTest, set) {
     ASSERT_EQ(m4, INVALID_ARGS_NUMBER) << "set 2 2 -- ERROR";
 
     console.readCommand(&field, "set a8");
-
-    EXPECT_TRUE(field.new_field[0][8]) << "set a8 -- ERROR";}
+    bool** cells = field.getCurrentField();
+    EXPECT_TRUE(cells[0][8]) << "set a8 -- ERROR";
+}
 
 TEST_F(CommandsTest, clear) {
     Field field;
@@ -78,5 +81,6 @@ TEST_F(CommandsTest, save_load) {
     ASSERT_EQ(m1, SUCCESS) << "save new.txt -- MSG ERROR";
     ASSERT_EQ(m2, SUCCESS) << "load new.txt -- MSG ERROR";
     
-    EXPECT_TRUE(field.new_field[1][4]) << "save/load -- DATA ERROR";
+    bool** cells = field.getCurrentField();
+    EXPECT_TRUE(cells[1][4]) << "save/load -- DATA ERROR";
 }

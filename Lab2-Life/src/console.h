@@ -25,11 +25,12 @@ enum consoleMessage {
 class Console {
 
 private:
+    consoleMessage status;
     std::string alphabet;
 public:
-    consoleMessage current_status;
-
     Console();
+
+    void startApp();
     static void clear();
     void updateField(Field*);
     consoleMessage readCommand(Field*, std::string="");

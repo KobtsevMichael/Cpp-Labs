@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.13)
 project(Lab2-Life)
-
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_EXE_LINKER_FLAGS "-static")
 
 add_subdirectory(lib/fmt)
 include_directories(lib/fmt/include)

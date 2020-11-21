@@ -1,2 +1,11 @@
-**/.idea/
-**/cmake-build*/
+# VS Code files
+.vscode
+*.sdf
+*.opensdf
+*.suo
+*.user
+
+# Ignore CI build directory
+build/
+cmake-build-debug/
+.idea/
