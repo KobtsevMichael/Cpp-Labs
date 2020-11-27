@@ -3,6 +3,8 @@
 
 #include <algorithm>
 #include <fstream>
+#include <fmt/format.h>
+#include <fmt/color.h>
 
 #include "variables.h"
 
@@ -12,13 +14,12 @@ class Field {
 private:
     bool **old_field;
     bool **new_field;
-public:
+    short_t getAliveNeighbours(short_t, short_t);
 
+public:
     Field();
     ~Field();
-
-    bool** getCurrentField();
-
+    bool** getCells();
     void reset();
     void set(short_t, short_t);
     void clear(short_t, short_t);
@@ -26,10 +27,8 @@ public:
     void back();
     void save(std::string);
     void load(std::string);
-
-    short_t getAliveNighbours(short_t, short_t);
+    void print();
     bool isCell(short_t, short_t);
-    void copyField();
 };
 
 #endif //LAB2_LIFE_FIELD_H

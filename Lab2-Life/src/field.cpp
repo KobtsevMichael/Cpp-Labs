@@ -28,7 +28,7 @@ Field::~Field() {
     delete[] new_field;
 }
 
-bool** Field::getCurrentField() {
+bool** Field::getCells() {
     return new_field;
 }
 
@@ -50,18 +50,23 @@ void Field::clear(short_t row, short_t col) {
 }
 
 void Field::step() {
-    copyField();
     for (short_t i=0; i < FIELD_W; ++i) {
         for (short_t j=0; j < FIELD_H; ++j) {
-            short_t alive_neighbours = getAliveNighbours(i, j);
+            short_t alive_neighbours = getAliveNeighbours(i, j);
             if (alive_neighbours == 3) {
-                new_field[i][j] = true;
+                old_field[i][j] = true;
             }
             else if (alive_neighbours != 2) {
-                new_field[i][j] = false;
+                old_field[i][j] = false;
+            }
+            else {
+                old_field[i][j] = new_field[i][j];
             }
         }
     }
+    bool** tmp = old_field;
+    old_field = new_field;
+    new_field = tmp;
 }
 
 void Field::back() {
@@ -103,7 +108,40 @@ void Field::load(string filename) {
     fin.close();
 }
 
-short_t Field::getAliveNighbours(short_t x, short_t y) {
+void Field::print() {
+
+    system("cls");
+
+    string num_col_format = " {:<" + to_string(MAX_NUM_LEN) + "}";
+
+    cout << fmt::format(num_col_format, "");
+    for (short_t j=0; j < FIELD_W; ++j) {
+        cout << string(" ", X_SEP) << ALPHABET[j];
+    }
+    cout << "\n";
+
+    for (short_t i=0; i < FIELD_H; ++i) {
+        for (short_t j=-1; j < FIELD_W; ++j) {
+
+            if (j == -1) {
+                cout << fmt::format(num_col_format, (short)i);
+                continue;
+            }
+
+            cout << string(" ", X_SEP);
+
+            if (new_field[j][i]) {
+                fmt::print(fg(fmt::color::dark_khaki), ALIVE_CELL);
+            } else {
+                fmt::print(fg(fmt::color::white), DEAD_CELL);
+            }
+        }
+        cout << "\n";
+    }
+    cout << "\n";
+}
+
+short_t Field::getAliveNeighbours(short_t x, short_t y) {
 
     short_t count = 0;
 
@@ -115,7 +153,7 @@ short_t Field::getAliveNighbours(short_t x, short_t y) {
             if (i < 0 || j < 0 || i >= FIELD_W || j >= FIELD_H) {
                 continue;
             }
-            count += (old_field[i][j] ? 1 : 0);
+            count += (new_field[i][j] ? 1 : 0);
         }
     }
 
@@ -124,12 +162,4 @@ short_t Field::getAliveNighbours(short_t x, short_t y) {
 
 bool Field::isCell(short_t row, short_t col) {
     return row >= 0 && row < FIELD_W && col >= 0 && col < FIELD_H;
-}
-
-void Field::copyField() {
-    for (short_t i=0; i < FIELD_W; ++i) {
-        for (short_t j=0; j < FIELD_H; ++j) {
-            old_field[i][j] = new_field[i][j];
-        }
-    }
 }

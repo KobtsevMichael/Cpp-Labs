@@ -26,17 +26,13 @@ class Console {
 
 private:
     consoleMessage status;
-    std::string alphabet;
-public:
-    Console();
-
-    void startApp();
-    static void clear();
-    void updateField(Field*);
-    consoleMessage readCommand(Field*, std::string="");
-
     void readCoords(std::string, Field*, short_t*, short_t*);
     std::vector<std::string> split(const std::string&, char);
+
+public:
+    Console();
+    void startApp();
+    consoleMessage readCommand(Field*, std::string="");
 };
 
 #endif //LAB2_LIFE_CONSOLE_H

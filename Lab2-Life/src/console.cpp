@@ -5,54 +5,14 @@ using namespace std;
 
 Console::Console() {
     status = GREETING;
-    alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 }
 
 void Console::startApp() {
     Field field;
     do {
-        updateField(&field);
+        field.print();
         status = readCommand(&field);
     } while (status != QUIT);
-}
-
-void Console::clear() {
-    system("cls");
-}
-
-void Console::updateField(Field *field) {
-
-    this->clear();
-
-    string num_col_format = " {:<" + to_string(MAX_NUM_LEN) + "}";
-
-    cout << fmt::format(num_col_format, "");
-    for (short_t j=0; j < FIELD_W; ++j) {
-        cout << string(" ", X_SEP) << alphabet[j];
-    }
-    cout << "\n";
-
-    bool** cells = (*field).getCurrentField();
-
-    for (short_t i=0; i < FIELD_H; ++i) {
-        for (short_t j=-1; j < FIELD_W; ++j) {
-
-            if (j == -1) {
-                cout << fmt::format(num_col_format, (short)i);
-                continue;
-            }
-
-            cout << string(" ", X_SEP);
-
-            if (cells[j][i]) {
-                fmt::print(fg(fmt::color::dark_khaki), ALIVE_CELL);
-            } else {
-                fmt::print(fg(fmt::color::white), DEAD_CELL);
-            }
-        }
-        cout << "\n";
-    }
-    cout << "\n";
 }
 
 consoleMessage Console::readCommand(Field *field, string command_str) {
@@ -141,10 +101,14 @@ consoleMessage Console::readCommand(Field *field, string command_str) {
         short_t n;
         try {
             n = command.size() == 1 ? 1 : stoi(command[1]);
+            if (n < 0) {
+                exception e;
+                throw e;
+            }
             for (short_t i=0; i < n-1; ++i) {
                 field->step();
                 Sleep(SLEEP_TIME);
-                updateField(field);
+                field->print();
             }
             field->step();
             Sleep(SLEEP_TIME);
@@ -194,7 +158,7 @@ void Console::readCoords(
     int_t i = 0;
 
     for (; i < cmd_str.length(); ++i) {
-        if (alphabet.find(cmd_str[i]) == string::npos) {
+        if (ALPHABET.find(cmd_str[i]) == string::npos) {
             break;
         }
         row += cmd_str[i];
@@ -204,7 +168,7 @@ void Console::readCoords(
     }
 
     try {
-        *row_int = alphabet.find(row);
+        *row_int = ALPHABET.find(row);
         *col_int = stoi(col);
     }
     catch (exception& e) {
