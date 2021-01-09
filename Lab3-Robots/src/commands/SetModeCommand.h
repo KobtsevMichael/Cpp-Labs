@@ -14,9 +14,11 @@
 class Game;
 
 class SetModeCommand : public AbstractCommand {
+private:
+    std::vector<std::string> modeArgs;
 public:
     void validate(std::vector<std::string>) override;
-    static void execute(Game*, std::vector<std::string>);
+    void execute(Game*);
 };
 
 #endif //LAB3_ROBOTS_SETMODECOMMAND_H

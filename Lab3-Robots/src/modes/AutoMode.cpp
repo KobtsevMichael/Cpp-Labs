@@ -2,9 +2,8 @@
 #include "../game/Game.h"
 
 void AutoMode::executeCommand(AbstractCommand *cmd) {
-    Game* pGame = getGamePtr();
     for (int i=0; i < 10; ++i) {
-        pGame->refresh(300);
+        pGame->refresh(SLEEP_TIME);
     }
     pGame->setMode(MANUAL_MODE);
 }

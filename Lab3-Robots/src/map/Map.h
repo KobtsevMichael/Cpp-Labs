@@ -16,7 +16,6 @@ class Map {
 private:
     std::vector<cell_t> data{};
     std::pair<int, int> size;
-    int exp = 2;
 
     [[nodiscard]] int toVectorIdx(std::pair<int, int>) const;
     [[nodiscard]] int toVectorIdxSigned(std::pair<int, int>) const;

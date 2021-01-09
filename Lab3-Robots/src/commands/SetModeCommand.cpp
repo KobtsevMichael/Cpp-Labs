@@ -2,6 +2,9 @@
 #include "../game/Game.h"
 
 void SetModeCommand::validate(std::vector<std::string> argv) {
+    if (argv.size() < 2) {
+        throw descriptive_exception("Invalid arguments number.");
+    }
     rmode_t modeType = toModeType(toLower(argv[1]));
     if (modeType == NONE_MODE) {
         throw descriptive_exception("Invalid mode name.");
@@ -14,17 +17,16 @@ void SetModeCommand::validate(std::vector<std::string> argv) {
     }
     else if (modeType == SCAN_MODE) {
         try {
-            std::stoi(argv[2]);
+            std::stoi(argv.at(2));
         }
-        catch (std::exception &) {
+        catch (std::exception&) {
             throw descriptive_exception("Invalid steps number.");
         }
     }
+    modeArgs = argv;
 }
 
-void SetModeCommand::execute(
-    Game* pGame, std::vector<std::string> cmdArgs
-) {
-    rmode_t newModeType = toModeType(cmdArgs[1]);
-    pGame->setMode(newModeType);
+void SetModeCommand::execute(Game* pGame) {
+    rmode_t newModeType = toModeType(modeArgs[1]);
+    pGame->setMode(newModeType, modeArgs);
 }

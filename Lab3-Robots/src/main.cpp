@@ -71,7 +71,7 @@ int main(int argc, char** argv) {
         return 0;
     }
 
-    Game *game;
+    Game* game;
 
     try {
         setVariables(parse, buffer);

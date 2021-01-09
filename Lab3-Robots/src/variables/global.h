@@ -47,10 +47,12 @@ enum direction_t {
 
 extern int MAP_W;
 extern int MAP_H;
-extern int VIEW_W;
-extern int VIEW_H;
 
 extern int COLLECTORS_N;
+
+extern int SLEEP_TIME;
+
+extern int EXP_K;
 
 extern std::string GLOBAL_MAP_FILE_PATH;
 

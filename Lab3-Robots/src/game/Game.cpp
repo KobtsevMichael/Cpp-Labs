@@ -22,6 +22,7 @@ Game::Game() {
     srand(time(nullptr));
 
     for (int i=0; i < COLLECTORS_N; ++i) {
+        // To spawn collector on random empty cell
         std::pair<int, int> randCoords;
         do {
             randCoords = {randInt(0, MAP_W), randInt(0, MAP_H)};
@@ -65,11 +66,10 @@ void Game::setRobots(
     robots = _robots;
 }
 
-void Game::setMode(rmode_t _modeType) {
-    auto* modeClass = toModeClass(_modeType);
-    modeClass->init(this);
+void Game::setMode(rmode_t _modeType, std::vector<std::string> _modeArgs) {
     delete pMode;
-    pMode = modeClass;
+    pMode = toModeClass(_modeType);
+    pMode->init(this, _modeArgs);
     modeType = _modeType;
 }
 
@@ -108,9 +108,9 @@ void Game::waitForCommand() {
     std::getline(std::cin, cmdLine);
 
     try {
-        // Разбиение строки на аргументы
+        // Split command line on args
         std::vector<std::string> args = parseCommandLine(cmdLine);
-        // Проверка команды
+        // Command check
         command_t cmdType = toCommandType(args[0]);
         if (cmdType == QUIT) {
             throw end_exception("BYE BYE !");
@@ -118,18 +118,18 @@ void Game::waitForCommand() {
         if (cmdType == NONE_CMD) {
             throw descriptive_exception("Invalid command name.");
         }
-        // Получение класса комманды и проверка аргументов
+        // Getting command class and checking args
         auto cmd = toCommandClass(cmdType);
         cmd->validate(args);
-        // Передача команды нужному режиму и её выполнение
+        // Passing command to necessary mode & executind
         if (cmdType == SET_MODE) {
-            SetModeCommand::execute(this, args);
+            dynamic_cast<SetModeCommand*>(cmd)->execute(this);
         }
         if (cmdType != SET_MODE or modeType != MANUAL_MODE) {
             pMode->executeCommand(cmd);
         }
         delete cmd;
-        // Если команда выполнилась
+        // If everything is ok
         state = {SUCCESS, "Success!"};
     }
     catch (end_exception& e) {

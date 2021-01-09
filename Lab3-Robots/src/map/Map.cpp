@@ -5,13 +5,13 @@ Map::Map() : size({0, 0}) {}
 
 void Map::expand() {
     std::vector<cell_t> tmpData(data);
-    size = {size.first + exp*2, size.second + exp*2};
+    size = {size.first + EXP_K*2, size.second + EXP_K*2};
     data.resize(size.first*size.second);
     for (int i = 0, j = 0; i < data.size(); ++i) {
-        if (i > size.first*exp &&
-            i < data.size() - size.first*exp &&
-            i % size.first >= exp &&
-            i % size.first < size.first - exp
+        if (i > size.first*EXP_K &&
+            i < data.size() - size.first*EXP_K &&
+            i % size.first >= EXP_K &&
+            i % size.first < size.first - EXP_K
         ) {
             data[i] = tmpData[j++];
         }
@@ -20,7 +20,6 @@ void Map::expand() {
         }
     }
     tmpData.clear();
-    std::cout << data.size() << std::endl;
 }
 
 int Map::toVectorIdx(std::pair<int, int> coords) const {

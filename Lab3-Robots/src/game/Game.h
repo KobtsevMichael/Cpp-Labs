@@ -12,7 +12,7 @@
 #include "../map/Map.h"
 #include "../robots/Collector.h"
 #include "../commands/SetModeCommand.h"
-#include "../modes/AbstractMode.h"
+#include "../modes/ManualMode.h"
 
 class View;
 
@@ -47,7 +47,7 @@ public:
 
     [[nodiscard]] int getActiveRobotId() const;
 
-    void setMode(rmode_t);
+    void setMode(rmode_t, std::vector<std::string> = {});
 
     void start();
     void refresh(int=0);

@@ -8,10 +8,8 @@ class Game;
 class AbstractCommand;
 
 class AbstractMode {
-private:
-    Game* pGame{};
 protected:
-    Game* getGamePtr();
+    Game* pGame{};
 public:
     virtual ~AbstractMode() = default;
     virtual void init(Game*, std::vector<std::string> = {});
