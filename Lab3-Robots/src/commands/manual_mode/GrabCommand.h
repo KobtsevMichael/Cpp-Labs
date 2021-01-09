@@ -1,0 +1,23 @@
+#ifndef LAB3_ROBOTS_GRABCOMMAND_H
+#define LAB3_ROBOTS_GRABCOMMAND_H
+
+#include <iostream>
+
+#include "../../robots/Collector.h"
+
+#include "AbstractManualModeCommand.h"
+
+class GrabCommand : public AbstractManualModeCommand {
+private:
+    const int argc = 1;
+public:
+    void validate(std::vector<std::string>) override;
+    std::vector<std::pair<AbstractRobot*, std::pair<int, int>>>
+    execute(
+        std::vector<std::pair<AbstractRobot*, std::pair<int, int>>>,
+        int,
+        Map*) override;
+};
+
+
+#endif //LAB3_ROBOTS_GRABCOMMAND_H

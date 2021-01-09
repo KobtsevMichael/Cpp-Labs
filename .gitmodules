@@ -7,3 +7,6 @@
 [submodule "Lab2-Life/lib/google_tests"]
 	path = Lab2-Life/lib/google_tests
 	url = https://github.com/google/googletest
+[submodule "Lab3-Robots/lib/fmt"]
+	path = Lab3-Robots/lib/fmt
+	url = https://github.com/fmtlib/fmt
