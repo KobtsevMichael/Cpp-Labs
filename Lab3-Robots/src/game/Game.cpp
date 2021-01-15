@@ -274,7 +274,7 @@ float Game::calculateRobotResearch(int id) {
 }
 
 bool Game::isOtherRobotOnCell(std::pair<int, int> cellCoords, int ignore) {
-    if (ignore < 0 || ignore >= robotsN) {
+    if (ignore == -1) {
         ignore = activeRobotId;
     }
     return std::any_of(
