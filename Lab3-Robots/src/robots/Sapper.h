@@ -1,13 +1,13 @@
-#ifndef LAB3_ROBOTS_COLLECTOR_H
-#define LAB3_ROBOTS_COLLECTOR_H
+#ifndef LAB3_ROBOTS_SAPPER_H
+#define LAB3_ROBOTS_SAPPER_H
 
 #include "AbstractRobot.h"
 
-class Collector : public AbstractRobot {
+class Sapper : public AbstractRobot {
 private:
-    int apples;
+    int bombs = 0;
 public:
-    explicit Collector(int id);
+    explicit Sapper(int id);
 
     std::pair<cell_t, cell_t> getOwnType() override;
     cell_t getItemType() override;
@@ -17,4 +17,4 @@ public:
 };
 
 
-#endif //LAB3_ROBOTS_COLLECTOR_H
+#endif //LAB3_ROBOTS_SAPPER_H

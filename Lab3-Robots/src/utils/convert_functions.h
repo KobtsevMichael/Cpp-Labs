@@ -18,6 +18,9 @@ AbstractMode* toModeClass(rmode_t);
 command_t toCommandType(const std::string&);
 AbstractCommand* toCommandClass(command_t);
 
-direction_t toDirectionType(const std::string&);
+direction_t toDirection(std::pair<int, int>);
+direction_t toDirectionFromString(const std::string&);
+std::pair<int, int> toDiffCoords(direction_t);
+std::pair<int, int> toDiffCoordsOpposite(direction_t);
 
 #endif //LAB3_ROBOTS_CONVERT_FUNCTIONS_H

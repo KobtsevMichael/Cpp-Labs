@@ -9,18 +9,26 @@ class AbstractRobot {
 protected:
     Map *pLocalMap;
     int id;
-    int localX, localY;
+    std::pair<int, int> position;
+
 public:
     explicit AbstractRobot(int id);
     virtual ~AbstractRobot();
 
+    // COMMON GETTERS & SETTERS
     Map* getLocalMap();
 
-    [[nodiscard]] int getId() const;
-    std::pair<int, int> getPosition();
+    int getId() const;
 
-    std::pair<int, int> getPositionCorner();
+    std::pair<int, int> getPosition();
     void setPosition(std::pair<int, int> pos);
+
+    // NECESSARY ROBOTS METHODS
+    virtual std::pair<cell_t, cell_t> getOwnType() = 0;
+    virtual cell_t getItemType() = 0;
+    virtual std::vector<cell_t> getGoodCells() = 0;
+    virtual int getItemsCount() const = 0;
+    virtual void onGrab() = 0;
 };
 
 

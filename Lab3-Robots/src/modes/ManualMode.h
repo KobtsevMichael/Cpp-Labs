@@ -7,7 +7,7 @@
 
 class ManualMode : public AbstractMode {
 public:
-    void executeCommand(AbstractCommand*) override;
+    void sendCommand(AbstractCommand*) override;
 };
 
 

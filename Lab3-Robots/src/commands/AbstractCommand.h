@@ -7,10 +7,13 @@
 #include "../utils/utils_functions.h"
 #include "../utils/exceptions.h"
 
+class Game;
+
 class AbstractCommand {
 public:
     virtual ~AbstractCommand() = default;
     virtual void validate(std::vector<std::string>) = 0;
+    virtual void execute(Game*) {};
 };
 
 

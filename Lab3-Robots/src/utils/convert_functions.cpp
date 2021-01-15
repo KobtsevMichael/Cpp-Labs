@@ -4,10 +4,9 @@
 #include "../modes/ManualMode.h"
 #include "../modes/ScanMode.h"
 
-#include "../commands/manual_mode/MoveCommand.h"
-#include "../commands/manual_mode/GrabCommand.h"
-#include "../commands/manual_mode/ScanCommand.h"
 #include "../commands/SetModeCommand.h"
+#include "../commands/SetRobotCommand.h"
+#include "../commands/ToggleSapperCommand.h"
 
 // CELL_T
 cell_t toCellType(char cellSymb) {
@@ -16,7 +15,8 @@ cell_t toCellType(char cellSymb) {
         case '#': return ROCK;
         case 'B': return BOMB;
         case 'A': return APPLE;
-        case 'R': return ROBOT;
+        case 'R': return ROBOT_SELF;
+        case 'S': return SAPPER_SELF;
         case '?': return UNKNOWN;
         default: return NONE_CELL;
     }
@@ -28,7 +28,10 @@ char toCellSymbol(cell_t cellType) {
         case ROCK: return '#';
         case BOMB: return 'B';
         case APPLE: return 'A';
-        case ROBOT: return 'R';
+        case ROBOT_SELF:
+        case ROBOT_OTHER: return 'R';
+        case SAPPER_SELF:
+        case SAPPER_OTHER: return 'S';
         case UNKNOWN: return '?';
         default: return ' ';
     }
@@ -48,11 +51,17 @@ command_t toCommandType(const std::string& cmdName) {
     else if (cmdName == "set_mode") {
         return SET_MODE;
     }
+    else if (cmdName == "robot") {
+        return SET_ROBOT;
+    }
+    else if (cmdName == "sapper") {
+        return TOGGLE_SAPPER;
+    }
     else if (cmdName == "quit") {
         return QUIT;
     }
     else {
-        return command_t::NONE_CMD;
+        return NONE_CMD;
     }
 }
 
@@ -62,6 +71,8 @@ AbstractCommand* toCommandClass(command_t cmdType) {
         case GRAB: return new GrabCommand;
         case SCAN: return new ScanCommand;
         case SET_MODE: return new SetModeCommand;
+        case SET_ROBOT: return new SetRobotCommand;
+        case TOGGLE_SAPPER: return new ToggleSapperCommand;
         default: return nullptr;
     }
 }
@@ -102,17 +113,31 @@ AbstractMode* toModeClass(rmode_t modeType) {
 }
 
 // DIRECTION_T
-direction_t toDirectionType(const std::string& dir) {
-    if (dir == "u") {
+direction_t toDirection(std::pair<int, int> diff) {
+    switch (diff.second) {
+        case -1: return U;
+        case 1: return D;
+        default: break;
+    }
+    switch (diff.first) {
+        case 1: return R;
+        case -1: return L;
+        default: break;
+    }
+    return NONE_DIR;
+}
+
+direction_t toDirectionFromString(const std::string& dirStr) {
+    if (dirStr == "u") {
         return U;
     }
-    else if (dir == "d") {
+    else if (dirStr == "d") {
         return D;
     }
-    else if (dir == "r") {
+    else if (dirStr == "r") {
         return R;
     }
-    else if (dir == "l") {
+    else if (dirStr == "l") {
         return L;
     }
     else {
@@ -120,3 +145,22 @@ direction_t toDirectionType(const std::string& dir) {
     }
 }
 
+std::pair<int, int> toDiffCoords(direction_t dir) {
+    switch (dir) {
+        case U: return {0, -1};
+        case D: return {0, 1};
+        case R: return {1, 0};
+        case L: return {-1, 0};
+        default: return {0, 0};
+    }
+}
+
+std::pair<int, int> toDiffCoordsOpposite(direction_t dir) {
+    switch (dir) {
+        case U: return {0, 1};
+        case D: return {0, -1};
+        case R: return {-1, 0};
+        case L: return {1, 0};
+        default: return {0, 0};
+    }
+}

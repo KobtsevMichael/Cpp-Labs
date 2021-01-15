@@ -13,7 +13,7 @@ protected:
 public:
     virtual ~AbstractMode() = default;
     virtual void init(Game*, std::vector<std::string> = {});
-    virtual void executeCommand(AbstractCommand*) = 0;
+    virtual void sendCommand(AbstractCommand*) = 0;
 };
 
 #endif //LAB3_ROBOTS_ABSTRACTMODE_H

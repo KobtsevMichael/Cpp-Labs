@@ -18,7 +18,7 @@ private:
     std::vector<std::string> modeArgs;
 public:
     void validate(std::vector<std::string>) override;
-    void execute(Game*);
+    void execute(Game*) override;
 };
 
 #endif //LAB3_ROBOTS_SETMODECOMMAND_H

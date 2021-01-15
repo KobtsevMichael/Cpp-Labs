@@ -1,31 +1,31 @@
 #include "GrabCommand.h"
 
+
 void GrabCommand::validate(std::vector<std::string> argv) {
     if (argv.size() != argc) {
-        throw descriptive_exception("Invalid arguments number.");
+        throw error_exception("Invalid arguments number.");
     }
 }
 
-std::vector<std::pair<AbstractRobot*, std::pair<int, int>>>
-    GrabCommand::execute(
-        std::vector<std::pair<AbstractRobot*, std::pair<int, int>>> robots,
-        int activeRobotId,
-        Map* pGlobalMap
-    )
+void GrabCommand::execute(
+    std::vector<std::pair<AbstractRobot*, std::pair<int, int>>>& robots,
+    int activeRobotId,
+    Map* pGlobalMap,
+    std::function<void(std::pair<int, int>, cell_t)> removeItemFromList)
 {
     auto [pRobot, globalCoords] = robots[activeRobotId];
-    auto pCollector = dynamic_cast<Collector*>(pRobot);
 
     cell_t cellT = pGlobalMap->getCell(globalCoords);
 
-    if (cellT != APPLE) {
-        throw descriptive_exception("No apples on this cell.");
+    if (cellT == EMPTY) {
+        throw error_exception("The cell is empty - nothing to grab. ");
+    }
+    if (cellT != pRobot->getItemType()) {
+        throw error_exception("You can't grab this item.");
     }
 
-    pCollector->addApple();
     pGlobalMap->setCell(globalCoords, EMPTY);
+    pRobot->onGrab();
 
-    robots[activeRobotId] = {pRobot, globalCoords};
-
-    return robots;
+    removeItemFromList(globalCoords, pRobot->getItemType());
 }
