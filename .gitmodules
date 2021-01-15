@@ -11,3 +11,6 @@
 	path = Lab3-Robots/lib/fmt
 	url = https://github.com/fmtlib/fmt
 
+[submodule "Lab3-Robots/lib/argh"]
+	path = Lab3-Robots/lib/argh
+	url = https://github.com/adishavit/argh.git
