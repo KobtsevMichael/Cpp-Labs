@@ -9,7 +9,6 @@
 #include <fmt/color.h>
 
 #include "variables.h"
-#include "field.h"
 
 
 enum consoleMessage {
@@ -22,15 +21,24 @@ enum consoleMessage {
     QUIT
 };
 
-class Console {
+class Field;
 
+class Console {
 private:
+    HANDLE consoleHandle;
     consoleMessage status;
     void readCoords(std::string, Field*, short_t*, short_t*);
     std::vector<std::string> split(const std::string&, char);
 
 public:
     Console();
+
+    void cls();
+    void setCursor(int, int);
+    void hideCursor();
+    void clearCommand();
+    static void onKeyboardInterrupt(sig_atomic_t);
+
     void startApp();
     consoleMessage readCommand(Field*, std::string="");
 };

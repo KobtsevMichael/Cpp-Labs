@@ -1,17 +1,52 @@
 #include "console.h"
+#include "field.h"
 
 
 using namespace std;
 
 Console::Console() {
+    consoleHandle = GetStdHandle(STD_OUTPUT_HANDLE);
+    signal (SIGINT, onKeyboardInterrupt);
+    hideCursor();
     status = GREETING;
+}
+
+void Console::cls() {
+    system("cls");
+}
+
+void Console::setCursor(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(consoleHandle, coord);
+}
+
+void Console::hideCursor() {
+    CONSOLE_CURSOR_INFO cursorInfo;
+    cursorInfo.dwSize = 1;
+    cursorInfo.bVisible = FALSE;
+    SetConsoleCursorInfo(consoleHandle, &cursorInfo);
+}
+
+void Console::clearCommand() {
+    setCursor(2, FIELD_H + 2);
+    cout << std::string(500, ' ');
+    setCursor(2, FIELD_H + 3);
+}
+
+void Console::onKeyboardInterrupt(sig_atomic_t) {
+    system("cls");
+    exit(0);
 }
 
 void Console::startApp() {
     Field field;
+    cls();
     do {
         field.print();
         status = readCommand(&field);
+        clearCommand();
     } while (status != QUIT);
 }
 
@@ -138,7 +173,7 @@ consoleMessage Console::readCommand(Field *field, string command_str) {
         if (command.size() != 1) {
             return INVALID_ARGS_NUMBER;
         }
-        cout << endl;
+        cls();
         return QUIT;
     }
     else {

@@ -32,6 +32,11 @@ bool** Field::getCells() {
     return new_field;
 }
 
+bool Field::isCell(short_t row, short_t col) {
+    return row >= 0 && row < FIELD_W && col >= 0 && col < FIELD_H;
+}
+
+
 void Field::reset() {
     for (short_t i=0; i < FIELD_W; ++i) {
         for (short_t j=0; j < FIELD_H; ++j) {
@@ -90,7 +95,7 @@ void Field::save(string filename) {
     fout.close();
 }
 
-void Field::load(string filename) {
+void Field::load(const string& filename) {
     ifstream fin;
     fin.open(filename);
     char symb;
@@ -110,7 +115,7 @@ void Field::load(string filename) {
 
 void Field::print() {
 
-    system("cls");
+    console.setCursor(0, 0);
 
     string num_col_format = " {:<" + to_string(MAX_NUM_LEN) + "}";
 
@@ -138,6 +143,8 @@ void Field::print() {
         }
         cout << "\n";
     }
+
+    cout << std::string(MAX_NUM_LEN + 1 + FIELD_W*(X_SEP+1), ' ');
     cout << "\n";
 }
 
@@ -158,8 +165,4 @@ short_t Field::getAliveNeighbours(short_t x, short_t y) {
     }
 
     return count;
-}
-
-bool Field::isCell(short_t row, short_t col) {
-    return row >= 0 && row < FIELD_W && col >= 0 && col < FIELD_H;
 }

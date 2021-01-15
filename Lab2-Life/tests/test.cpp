@@ -3,6 +3,7 @@
 
 #include "../src/variables.h"
 #include "../src/console.h"
+#include "../src/field.h"
 
 using testing::Eq;
 class CommandsTest: public testing::Test {};
