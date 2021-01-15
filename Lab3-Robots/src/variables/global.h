@@ -2,10 +2,12 @@
 #define LAB3_ROBOTS_GLOBAL
 
 #include <string>
+#include <vector>
 
 enum state_t {
     START,
     RUNNING,
+    INFO,
     SUCCESS,
     EXCEPTION,
     END
@@ -16,7 +18,10 @@ enum cell_t {
     ROCK,
     BOMB,
     APPLE,
-    ROBOT,
+    ROBOT_SELF,
+    ROBOT_OTHER,
+    SAPPER_SELF,
+    SAPPER_OTHER,
     UNKNOWN,
     NONE_CELL
 };
@@ -26,6 +31,8 @@ enum command_t {
     GRAB,
     SCAN,
     SET_MODE,
+    SET_ROBOT,
+    TOGGLE_SAPPER,
     QUIT,
     NONE_CMD
 };
@@ -45,15 +52,12 @@ enum direction_t {
     NONE_DIR
 };
 
-extern int MAP_W;
-extern int MAP_H;
 
-extern int COLLECTORS_N;
+const int SLEEP_TIME = 0;
+const int EXP_K = 2;
 
-extern int SLEEP_TIME;
+const std::vector<cell_t> GOOD_CELLS = {EMPTY, APPLE, ROBOT_SELF};
 
-extern int EXP_K;
-
-extern std::string GLOBAL_MAP_FILE_PATH;
+const std::vector<command_t> MODE_COMMANDS = {MOVE, SCAN, GRAB};
 
 #endif //LAB3_ROBOTS_GLOBAL
