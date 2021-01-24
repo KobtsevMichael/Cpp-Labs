@@ -26,6 +26,9 @@ int main(int argc, char** argv) {
         if (cmdl({"-c", "--collector"})) {
             COLLECTORS_N = toInt(cmdl({"-c", "--collector"}).str(), 1, 5);
         }
+        if (cmdl({"-a", "--algorithm"})) {
+            SCAN_MODE_ALGORITHM = cmdl({"-a", "--algorithm"}).str();
+        }
     }
     catch (error_exception& e) {
         fmt::print("Parse cmd line error ({}).\n", e.what());

@@ -3,6 +3,7 @@
 
 #include <functional>
 #include <vector>
+#include <set>
 #include <cmath>
 
 #include "../variables/global.h"

@@ -1,10 +1,6 @@
 #include "ScanMode.h"
 #include "../game/Game.h"
 
-#include <fmt/ranges.h>
-#include <memory>
-
-
 void ScanMode::init(Game* _pGame, std::vector<std::string> _args) {
     AbstractMode::init(_pGame);
     stepsN = std::stoi(_args[2]);
@@ -13,6 +9,8 @@ void ScanMode::init(Game* _pGame, std::vector<std::string> _args) {
 void ScanMode::sendCommand(AbstractCommand *cmd) {
 
     auto robots = pGame->getRobots();
+    auto robotId = pGame->getActiveRobotId();
+    auto pGlobalMap = pGame->getGlobalMap();
 
     pGame->setState({RUNNING, "Running"});
     pGame->refresh();
@@ -23,36 +21,49 @@ void ScanMode::sendCommand(AbstractCommand *cmd) {
     for (int i=0; i < stepsN; ++i) {
 
         auto [pRobot, globalCoords] = pGame->getActiveRobot();
+        auto pLocalMap = pRobot->getLocalMap();
 
-        auto localCoords = pRobot->getPosition();
-        auto nearestPoint = findNearestUnknownCell();
+        std::vector<direction_t> way;
 
-        if (nearestPoint == localCoords) {
-            break;
+        if (SCAN_MODE_ALGORITHM == "dijkstra") {
+            auto isTraversableCallback =
+                [this, gM=pGlobalMap, lM=pLocalMap, r=pRobot, gRC=globalCoords]
+                    (std::pair<int, int> lCC) -> bool {
+                    auto gCC = gRC - r->getPosition() + lCC;
+                    return isTraversable(gM, lM, gCC, lCC);
+                }
+            ;
+            try {
+                way = dijkstraSearch(
+                    pLocalMap,
+                    pRobot->getPosition(),
+                    isTraversableCallback
+                );
+            }
+            catch (way_not_found_exception&) {
+                break;
+            }
         }
-
-        auto way = aStarSearch(
-            pRobot->getLocalMap(),
-            localCoords,
-            nearestPoint
-        );
+        else {
+            auto nearestPoint = findNearestUnknownCell();
+            if (nearestPoint == pRobot->getPosition()) {
+                break;
+            }
+            way = aStarSearch(
+                pRobot->getLocalMap(),
+                pRobot->getPosition(),
+                nearestPoint
+            );
+        }
 
         for (auto it = way.rbegin(); it < way.rend() - 1; ++it) {
             moveCmd->setDirection(*it);
-            moveCmd->execute(
-                robots,
-                pGame->getActiveRobotId(),
-                pGame->getGlobalMap()
-            );
+            moveCmd->execute(robots, robotId, pGlobalMap);
             pGame->setRobots(robots);
             pGame->refresh(SLEEP_TIME, false);
         }
 
-        scanCmd->execute(
-            robots,
-            pGame->getActiveRobotId(),
-            pGame->getGlobalMap()
-        );
+        scanCmd->execute(robots, robotId, pGlobalMap);
         pGame->refresh(SLEEP_TIME, false);
     }
 
@@ -60,6 +71,19 @@ void ScanMode::sendCommand(AbstractCommand *cmd) {
     delete scanCmd;
 
     pGame->setMode(MANUAL_MODE);
+}
+
+bool ScanMode::isTraversable(
+    Map* pGlobalMap,
+    Map* pLocalMap,
+    std::pair<int, int> gCoords,
+    std::pair<int, int> lCoords)
+{
+    auto cellT = pLocalMap->getCell(lCoords);
+    return (isInArray(GOOD_CELLS, cellT) ||
+            cellT == UNKNOWN ||
+            cellT == NONE_CELL) &&
+           pGlobalMap->isOnMap(gCoords);
 }
 
 std::pair<int, int> ScanMode::findNearestUnknownCell() {

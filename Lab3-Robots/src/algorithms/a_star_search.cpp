@@ -1,9 +1,7 @@
 #include "a_star_search.h"
 
-#include <fmt/ranges.h>
-
-struct Node {
-    Node* parent;
+struct NodeA {
+    NodeA* parent;
     std::pair<int, int> coords;
     int g;
     int h;
@@ -13,7 +11,7 @@ int heuristic(std::pair<int, int> p1, std::pair<int, int> p2) {
     return abs(p1.first - p2.first) + abs(p1.second - p2.second);
 }
 
-Node* findNodeInList(std::vector<Node*> list, std::pair<int, int> coords) {
+NodeA* findNodeInList(std::set<NodeA*> list, std::pair<int, int> coords) {
     for (auto &node : list) {
         if (node->coords == coords) {
             return node;
@@ -28,31 +26,17 @@ std::vector<direction_t> aStarSearch(
     std::pair<int, int> dest,
     std::function<bool(std::pair<int, int>)> isRobot)
 {
-    std::vector<Node*> open, closed;
+    std::set<NodeA*> openSet, closedSet;
+    openSet.insert(new NodeA {nullptr, start, 0, 0});
 
-    Node* startNode = new Node {nullptr, start, 0, 0};
-    open.push_back(startNode);
+    NodeA* current;
 
-    Node* current;
+    while (!openSet.empty()) {
 
-    while (!open.empty()) {
+        current = *openSet.begin();
 
-        auto currentIt = open.begin();
-        current = *currentIt;
-
-        for (auto it = open.begin(); it != open.end(); ++it) {
-            auto node = *it;
-            if (node->g + node->h < current->g + current->h || (
-                node->g + node->h == current->g + current->h &&
-                node->h < current->h)
-            ) {
-                current = node;
-                currentIt = it;
-            }
-        }
-
-        open.erase(currentIt);
-        closed.push_back(current);
+        openSet.erase(openSet.begin());
+        closedSet.insert(current);
 
         if (current->coords == dest) {
             break;
@@ -61,21 +45,21 @@ std::vector<direction_t> aStarSearch(
         auto neighbours = map->getCellGoodNeighbours(current->coords, dest);
         for (auto& neighbourCoords : neighbours) {
 
-            if (findNodeInList(closed, neighbourCoords) != nullptr || (
-                isRobot != nullptr && isRobot(neighbourCoords))
-            ) {
+            if (findNodeInList(closedSet, neighbourCoords) != nullptr || (
+                isRobot != nullptr && isRobot(neighbourCoords)))
+            {
                 continue;
             }
 
-            Node* successor = findNodeInList(open, neighbourCoords);
+            NodeA* successor = findNodeInList(openSet, neighbourCoords);
             if (successor == nullptr) {
-                successor = new Node {
+                successor = new NodeA {
                     current,
                     neighbourCoords,
                     current->g + 1,
                     heuristic(neighbourCoords, dest)
                 };
-                open.push_back(successor);
+                openSet.insert(successor);
             }
             else if (current->g + 1 < successor->g) {
                 successor->parent = current;

@@ -52,12 +52,12 @@ enum direction_t {
     NONE_DIR
 };
 
+extern const int SLEEP_TIME;
+extern const int EXP_K;
 
-const int SLEEP_TIME = 0;
-const int EXP_K = 2;
+extern const std::vector<cell_t> GOOD_CELLS;
+extern const std::vector<command_t> MODE_COMMANDS;
 
-const std::vector<cell_t> GOOD_CELLS = {EMPTY, APPLE, ROBOT_SELF};
-
-const std::vector<command_t> MODE_COMMANDS = {MOVE, SCAN, GRAB};
+extern std::string SCAN_MODE_ALGORITHM;
 
 #endif //LAB3_ROBOTS_GLOBAL

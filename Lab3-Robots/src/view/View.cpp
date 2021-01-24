@@ -196,15 +196,6 @@ void View::showGameStatusLine(
 }
 
 void View::showGoodbyeMessage(std::string msg) {
-//    cls();
-//    fmt::print(fg(accentColor),
-//               std::string(viewW, '#') + "\n");
-//    fmt::print(fg(accentColor),
-//               "{:^" + std::to_string(viewW) + "s}\n",
-//               " BYE BYE ! ");
-//    fmt::print(fg(accentColor),
-//               std::string(viewW, '#') + "\n\n");
-
     fmt::print(fg(classicColor), "\n" + msg + "\n\n");
 }
 
