@@ -10,6 +10,7 @@
 #include "../utils/exceptions.h"
 #include "../utils/utils.h"
 
+
 template<typename... Args>
 class Parser {
 private:
@@ -19,6 +20,17 @@ private:
     char rowSep;
     int linesTotal;
 
+    void setLinesNumber() {
+        linesTotal = 0;
+        std::string tmp;
+        while (getline(csvFile, tmp)) {
+            linesTotal += 1;
+        }
+        tmp.clear();
+        csvFile.clear();
+        csvFile.seekg(0, std::ios::beg);
+    }
+
     std::string getRow(int lineIdx) {
         std::string rowStr;
         char ch;
@@ -27,9 +39,9 @@ private:
             rowStr += ch;
         }
 
-        if (!csvFile.get(ch) && ch == exitChar) {
+        if (!csvFile.eof() && ch == exitChar) {
             throw simple_exception(
-                "Error on line " + std::to_string(lineIdx+1) + ": "
+                "Line " + std::to_string(lineIdx+1) + ": "
                 "Unexpected exit symbol."
             );
         }
@@ -42,9 +54,6 @@ private:
         std::string fieldStr;
 
         for (auto& ch : line) {
-            if (ch == exitChar) {
-                break;
-            }
             if (ch == colSep) {
                 fields.push_back(fieldStr);
                 fieldStr.clear();
@@ -64,7 +73,7 @@ private:
     const std::tuple<Args...> getTuple(std::string line, int lineIdx) {
         if (line.empty()) {
             throw simple_exception(
-                "Error on line " + std::to_string(lineIdx+1) + ": "
+                "Line " + std::to_string(lineIdx+1) + ": "
                 "Empty line."
             );
         }
@@ -74,7 +83,7 @@ private:
 
         if (fields.size() != fieldsN) {
             throw simple_exception(
-                "Error on line " + std::to_string(lineIdx+1) + ": "
+                "Line " + std::to_string(lineIdx+1) + ": "
                 "Wrong fields number."
             );
         }
@@ -85,7 +94,7 @@ private:
         }
         catch (simple_exception& e) {
             throw simple_exception(
-                "Error on line " + std::to_string(lineIdx+1) + ": " +
+                "Line " + std::to_string(lineIdx+1) + ": " +
                 e.what()
             );
         }
@@ -131,14 +140,9 @@ public:
         csvFile(csvFile), colSep(colSep), rowSep(rowSep), exitChar(exitChar)
     {
         if (!csvFile) {
-            throw simple_exception("Can't find file.");
+            throw simple_exception("Can't find specified file.");
         }
-        linesTotal = std::count(
-            std::istreambuf_iterator<char>(csvFile),
-            std::istreambuf_iterator<char>(),
-            rowSep
-        );
-        csvFile.seekg(0, std::ios::beg);
+        setLinesNumber();
     }
 
     ~Parser() {

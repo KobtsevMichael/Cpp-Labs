@@ -1,10 +1,11 @@
 #include <iostream>
+
 #include "parser/Parser.h"
 
 
 int main() {
 
-    std::ifstream csvFile("../data/file1.csv");
+    std::ifstream csvFile("../data/file3.csv");
 
     try {
         Parser<int, int, std::string, float> parser(csvFile);

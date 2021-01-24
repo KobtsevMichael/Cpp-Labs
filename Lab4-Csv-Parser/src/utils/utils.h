@@ -7,7 +7,7 @@
 
 #include "exceptions.h"
 
-// String to type
+// String to declared type
 template<typename T>
 T toType(std::string str) {
     if constexpr (std::is_same_v<T, std::string>) {
@@ -42,7 +42,7 @@ std::ostream& operator<<(std::ostream& out, const std::tuple<Args...>& tuple) {
     return out;
 }
 
-// Converting string vector to tuple
+// Converting vector of strings to tuple
 template<size_t N, typename T>
 struct ToTuple {
     static void convert(T& t, std::vector<std::string>& strV) {
